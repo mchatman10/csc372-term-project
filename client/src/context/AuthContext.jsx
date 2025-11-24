@@ -1,20 +1,38 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { API } from "../api";
 
-const AuthCtx = createContext();
-export function useAuth() { return useContext(AuthCtx); }
+const AuthContext = createContext();
 
-export default function AuthProvider({ children }) {
+export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
 
+    async function loadUser() {
+        try {
+            const u = await API.get("/auth/me");
+            setUser(u);
+        } catch {
+            setUser(null);
+        }
+    }
+
+    useEffect(() => {
+        loadUser();
+    }, []);
+
     async function logout() {
-        try { await API.post("/auth/logout"); } catch { }
+        await API.post("/auth/logout");
         setUser(null);
     }
 
-    return (
-        <AuthCtx.Provider value={{ user, setUser, logout }}>
-            {children}
-        </AuthCtx.Provider>
-    );
+    const value = {
+        user,
+        setUser,
+        logout,
+    };
+
+    return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+export function useAuth() {
+    return useContext(AuthContext);
 }
