@@ -20,10 +20,13 @@ app.use(
       "https://csc372-term-project-1-ukr6.onrender.com",
       "https://csc372-term-project-1.onrender.com"
     ],
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type"],
     credentials: true,
   })
 );
+
+app.options("*", cors());
 
 app.use(
   session({
