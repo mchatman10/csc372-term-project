@@ -1,0 +1,19 @@
+.container {
+    display: flex;
+    gap: 4px;
+}
+
+.star,
+.starFilled {
+    cursor: pointer;
+    font-size: 1.6rem;
+    transition: 0.15s;
+}
+
+.star {
+    color: #777;
+}
+
+.starFilled {
+    color: #f4b400;
+}
