@@ -1,42 +1,40 @@
-const BASE = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+const API_BASE = import.meta.env.VITE_API_URL;
 
-async function request(path, { method = 'GET', body, headers } = {}) {
+async function request(path, method = "GET", body) {
   const opts = {
     method,
-    headers: { 'Content-Type': 'application/json', ...(headers || {}) },
-    credentials: 'include'
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
   };
-  if (body !== undefined) opts.body = JSON.stringify(body);
-  const res = await fetch(`${BASE}${path}`, opts);
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw data;
-  return data;
+
+  if (body) opts.body = JSON.stringify(body);
+
+  const res = await fetch(`${API_BASE}${path}`, opts);
+
+  if (!res.ok) {
+    const msg = await res.text();
+    throw new Error(msg || "Request failed");
+  }
+
+  return res.json();
 }
 
 export const API = {
-  get: (path) =>
-    fetch(import.meta.env.VITE_API_URL + path, {
-      credentials: "include",
-    }).then((r) => r.json()),
+  googleLogin: (credential) =>
+    request("/auth/google", "POST", { credential }),
 
-  post: (path, body) =>
-    fetch(import.meta.env.VITE_API_URL + path, {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    }).then((r) => r.json()),
+  get: (path) => request(path),
+  post: (path, body) => request(path, "POST", body),
+  del: (path) => request(path, "DELETE"),
 
-  delete: (path) =>
-    fetch(import.meta.env.VITE_API_URL + path, {
-      method: "DELETE",
-      credentials: "include",
-    }).then((r) => r.json()),
+  rateRecipe: (recipeId, value) =>
+    request("/ratings", "POST", { recipe_id: recipeId, value }),
 
-  getUserRating: (id) => API.get(`/recipes/${id}/rating`),
-  getAverageRating: (id) => API.get(`/recipes/${id}/average-rating`),
-  rateRecipe: (id, value) => API.post(`/recipes/${id}/rate`, { value }),
-  deleteRating: (id) => API.delete(`/recipes/${id}/rate`),
+  getUserRating: (recipeId) =>
+    request(`/ratings/user/${recipeId}`),
+
+  getAverageRating: (recipeId) =>
+    request(`/ratings/average/${recipeId}`),
 };
-
-
