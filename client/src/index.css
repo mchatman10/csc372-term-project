@@ -1,9 +1,22 @@
-:root {
+:root[data-theme="dark"] {
     --bg: #121212;
     --card-bg: #1e1e1e;
     --text: #ffffff;
     --accent: #ff4d4d;
 }
+
+:root[data-theme="light"] {
+    --bg: #ffffff;
+    --card-bg: #f3f3f3;
+    --text: #222;
+    --accent: #ff4d4d;
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
+}
+
 
 body {
     margin: 0;
