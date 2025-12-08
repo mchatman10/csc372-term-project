@@ -18,7 +18,7 @@ app.use(
   cors({
     origin: [
       "https://csc372-term-project-1-lnk9.onrender.com",  // <-- YOUR ACTUAL FRONTEND
-      "https://csc372-term-project-1.onrender.com"        // keep if needed
+      "https://csc372-term-project-1.onrender.com"        // keep if needed.
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
