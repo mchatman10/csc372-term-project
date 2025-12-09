@@ -1,1 +1,8 @@
-https://uncg-my.sharepoint.com/:v:/g/personal/mhchatman_uncg_edu/IQDz12qOZ8RhTov0l8e5A8_1AczbOX_jkRdHxCQREPrmRbE?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJPbmVEcml2ZUZvckJ1c2luZXNzIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXciLCJyZWZlcnJhbFZpZXciOiJNeUZpbGVzTGlua0NvcHkifX0&e=fEajX0
+Instructions: click the link: https://csc372-term-project-1-lnk9.onrender.com/ to get taken to the landing page, where you have the option to login or add a recipe.
+App URL: https://csc372-term-project-1-lnk9.onrender.com/ (this is the one to be used)
+Back end URL: https://csc372-term-project-1.onrender.com
+
+Design choices: I chose what I'm most comfortable with based on the bit of hands-on experience we got during the lectures. React + Vite, Render, Node.js, and Neon were all protocols that we spent time getting used to in class, so I felt the most comfortable using them. 
+Challenges: By far the biggest hurdle was getting authentication to work properly after deploying to render; I solved the issue by profusely changing environment variables around, looking up information about Render, just generally learning more about Render so I could understand how the front end and back end were communicating with each other
+Learning Outcomes: I truly did learn how to develop a full stack app. I particularly learned a lot about authentication, the deployment was initially giving me a lot of problems so I was forced to learn how to work around it, and I got some more practice with SQL and integrating the database, which I liked.
+Future Work: I would have liked to add a system where you could rate other people's recipe submissions. I would have also liked to implement logging in with your Google account using OAuth.
