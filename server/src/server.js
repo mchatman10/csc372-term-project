@@ -1,11 +1,12 @@
-import 'dotenv/config'
-import express from 'express'
-import cors from 'cors'
-import session from 'express-session'
+import "dotenv/config";
+import express from "express";
+import cors from "cors";
+import session from "express-session";
 
-import auth from './routes/auth.js'
-import recipes from './routes/recipes.js'
-import external from './routes/external.js'
+import authRoutes from "./routes/auth.js";
+import recipeRoutes from "./routes/recipes.js";
+import externalRoutes from "./routes/external.js";
+
 
 const app = express()
 const PORT = process.env.PORT || 3000

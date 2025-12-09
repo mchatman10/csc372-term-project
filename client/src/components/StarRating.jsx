@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import styles from "./StarRating.module.css";
+
 export default function StarRating({ value=0, onRate=()=>{} }){
   const [hover, setHover] = useState(null)
   return (

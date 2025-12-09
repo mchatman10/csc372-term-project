@@ -1,5 +1,7 @@
-import { Router } from 'express'
-import fetch from 'node-fetch'
+import { Router } from "express";
+import fetch from "node-fetch";
+import parseNutrition from "../util/parse-nutrition.js";
+
 const router = Router()
 
 router.get('/nutrition', async (req, res) => {

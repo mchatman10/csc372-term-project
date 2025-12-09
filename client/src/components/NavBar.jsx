@@ -1,7 +1,7 @@
-import React from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import ThemeToggle from './ThemeToggle.jsx'
-import { useAuth } from '../context/AuthContext.jsx'
+import { useAuth } from "../context/AuthContext";
+import { Link } from "react-router-dom";
+import styles from "./NavBar.module.css";
+import ThemeToggle from "./ThemeToggle";
 
 export default function NavBar(){
   const { user, logout } = useAuth()

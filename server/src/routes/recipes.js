@@ -1,6 +1,7 @@
-import { Router } from 'express'
-import { query } from '../db.js'
-import { requireAuth } from '../middleware/auth.js'
+import { Router } from "express";
+import { query } from "../db.js";
+import { requireAuth } from "../middleware/auth.js";
+
 const router = Router()
 
 router.get('/', async (_req, res) => {

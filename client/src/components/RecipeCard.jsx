@@ -1,5 +1,7 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link } from "react-router-dom";
+import styles from "./RecipeCard.module.css";
+import StarRating from "./StarRating";
+
 
 export default function RecipeCard({ r }){
   const cover = r.image_url || 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=1200&auto=format&fit=crop'

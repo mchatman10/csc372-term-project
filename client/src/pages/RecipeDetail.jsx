@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
-import { API } from '../util/api.js'
-import { useAuth } from '../context/AuthContext.jsx'
+import { API } from "../util/api";
+import styles from "./RecipeDetail.module.css";
+import StarRating from "../components/StarRating";
+
 export default function RecipeDetail(){
   const { id } = useParams()
   const nav = useNavigate()

@@ -1,11 +1,11 @@
-import React from 'react'
-import { Routes, Route, Navigate } from 'react-router-dom'
-import NavBar from './components/NavBar.jsx'
-import { AuthProvider } from './context/AuthContext.jsx'
-import RecipeList from './pages/RecipeList.jsx'
-import RecipeDetail from './pages/RecipeDetail.jsx'
-import RecipeForm from './pages/RecipeForm.jsx'
-import Login from './pages/Login.jsx'
+import { Routes, Route } from "react-router-dom";
+import NavBar from "./components/NavBar";
+import Login from "./pages/Login";
+import RecipeList from "./pages/RecipeList";
+import RecipeDetail from "./pages/RecipeDetail";
+import RecipeForm from "./pages/RecipeForm";
+import "./App.css";
+
 
 export default function App(){
   return (
