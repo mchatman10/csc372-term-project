@@ -1,1 +1,17 @@
-.x{}
+.nav {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: #0a0a0a;
+    border-bottom: 1px solid #222
+}
+
+.brand {
+    font-weight: 700;
+    text-decoration: none;
+    color: #fff
+}
+
+.user {
+    opacity: .85
+}

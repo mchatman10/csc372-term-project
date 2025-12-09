@@ -1,24 +1,29 @@
 const API_BASE = import.meta.env.VITE_API_URL
-async function request(path, method='GET', body){
-  const res = await fetch(`${API_BASE}${path}`, {
+
+async function request(path, method = 'GET', body) {
+  const opts = {
     method,
     headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
-    body: body ? JSON.stringify(body) : undefined
-  })
-  if(!res.ok){
-    const text = await res.text().catch(()=> '')
-    throw new Error(text || 'Request failed')
+    credentials: 'include'
   }
-  return res.headers.get('content-type')?.includes('application/json') ? res.json() : res.text()
+  if (body) opts.body = JSON.stringify(body)
+  const res = await fetch(`${API_BASE}${path}`, opts)
+  if (!res.ok) {
+    const msg = await res.text().catch(() => 'Request failed')
+    throw new Error(msg || 'Request failed')
+  }
+  return res.json()
 }
+
 export const API = {
-  get: p=>request(p), post:(p,b)=>request(p,'POST',b), put:(p,b)=>request(p,'PUT',b), del:p=>request(p,'DELETE'),
-  listRecipes: ()=>request('/recipes'),
-  getRecipe: id=>request(`/recipes/${id}`),
-  createRecipe: payload=>request('/recipes','POST',payload),
-  deleteRecipe: id=>request(`/recipes/${id}`,'DELETE'),
-  me: ()=>request('/auth/me'), logout: ()=>request('/auth/logout'),
-  googleLogin: credential=>request('/auth/google','POST',{credential}),
-  nutrition: q=>request(`/external/nutrition?q=${encodeURIComponent(q)}`)
+  get: (p) => request(p),
+  post: (p, b) => request(p, 'POST', b),
+  del: (p) => request(p, 'DELETE'),
+  me: () => request('/auth/me'),
+  login: (email, password) => request('/auth/login', 'POST', { email, password }),
+  register: (email, password, display_name) => request('/auth/register', 'POST', { email, password, display_name }),
+  logout: () => request('/auth/logout', 'POST'),
+  listRecipes: () => request('/recipes'),
+  getRecipe: (id) => request(`/recipes/${id}`),
+  createRecipe: (data) => request('/recipes', 'POST', data)
 }

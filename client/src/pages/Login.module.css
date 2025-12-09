@@ -1,0 +1,57 @@
+.container {
+    max-width: 350px;
+    margin: 3rem auto;
+    padding: 2rem;
+    background: #1f1f1f;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+    text-align: center;
+}
+
+.title {
+    margin-bottom: 1rem;
+    font-size: 1.8rem;
+    color: white;
+}
+
+.error {
+    color: #ff6b6b;
+    margin-bottom: 1rem;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.input {
+    padding: 0.7rem;
+    border-radius: 8px;
+    border: 1px solid #444;
+    background: #2c2c2c;
+    color: white;
+}
+
+.button {
+    padding: 0.8rem;
+    border: none;
+    background: #4caf50;
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.button:hover {
+    background: #3e8e41;
+}
+
+.switchText {
+    margin-top: 1rem;
+    color: #ccc;
+}
+
+.switchLink {
+    color: #4ca3ff;
+    cursor: pointer;
+}

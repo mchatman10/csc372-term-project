@@ -1,21 +1,31 @@
-import { useAuth } from "../context/AuthContext";
-import { Link } from "react-router-dom";
-import styles from "./NavBar.module.css";
-import ThemeToggle from "./ThemeToggle";
+
+import { Link, useNavigate } from 'react-router-dom'
+import styles from './NavBar.module.css'
+import { useAuth } from '../context/AuthContext.jsx'
 
 export default function NavBar(){
   const { user, logout } = useAuth()
   const nav = useNavigate()
-  async function onLogout(){ await logout(); nav('/') }
+
+  async function handleLogout(){
+    await logout()
+    nav('/login')
+  }
+
   return (
-    <nav className="nav">
-      <div className="container row" style={{justifyContent:'space-between'}}>
-        <Link className="brand" to="/">RecipeShare</Link>
-        <div className="right">
+    <nav className={styles.nav}>
+      <div className="container" style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+        <Link to="/" className={styles.brand}>RecipeShare</Link>
+        <div style={{display:'flex',gap:12,alignItems:'center'}}>
           <Link className="btn secondary" to="/new">Add Recipe</Link>
-          <ThemeToggle />
-          {user ? (<><span style={{color:'#b9bec7'}}>{user.display_name || user.email}</span><button className="btn" onClick={onLogout}>Logout</button></>)
-                : (<Link className="btn" to="/login">Login</Link>)}
+          {user ? (
+            <>
+              <span className={styles.user}>{user.display_name || user.email}</span>
+              <button className="btn" onClick={handleLogout}>Logout</button>
+            </>
+          ) : (
+            <Link className="btn" to="/login">Login</Link>
+          )}
         </div>
       </div>
     </nav>

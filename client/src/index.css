@@ -1,18 +1,54 @@
-:root { color-scheme: dark; --bg:#0b0b0f; --panel:#14141a; --text:#eaeaea; --accent:#ff4d4f; }
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto}
-a{color:inherit;text-decoration:none}
-.container{max-width:980px;margin:0 auto;padding:16px}
-.card{background:var(--panel);border-radius:14px;padding:16px;box-shadow:0 6px 24px rgba(0,0,0,.25)}
-.btn{background:var(--accent);color:#fff;border:none;border-radius:10px;padding:10px 14px;cursor:pointer}
-.btn.secondary{background:#23232c}
-.input,.textarea{width:100%;padding:10px;border-radius:10px;border:1px solid #2a2a37;background:#121217;color:var(--text)}
-.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
-.badge{background:#23232c;color:#c6cbd3;font-size:12px;padding:4px 8px;border-radius:999px;margin-right:6px}
-.cover{width:100%;height:160px;object-fit:cover;border-radius:12px}
-.nav{position:sticky;top:0;z-index:10;background:rgba(11,11,15,.7);backdrop-filter:blur(12px);border-bottom:1px solid #1e1e26}
-.brand{font-weight:800;letter-spacing:.4px}
-.right{display:flex;align-items:center;gap:12px}
-h1,h2,h3{margin:10px 0}
-hr{border:none;border-top:1px solid #222230;margin:12px 0}
+body {
+    margin: 0;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+    background: #111;
+    color: #eee
+}
+
+a,
+a:visited {
+    color: #aee
+}
+
+.container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 16px
+}
+
+.btn {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: none;
+    background: #3b82f6;
+    color: #fff;
+    cursor: pointer
+}
+
+.btn.secondary {
+    background: #6b7280
+}
+
+.card {
+    background: #1b1b1b;
+    border: 1px solid #333;
+    padding: 16px;
+    border-radius: 12px
+}
+
+input,
+textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 6px 0;
+    background: #0d0d0d;
+    border: 1px solid #333;
+    border-radius: 8px;
+    color: #eee
+}
+
+h1,
+h2,
+h3 {
+    margin: .3em 0
+}

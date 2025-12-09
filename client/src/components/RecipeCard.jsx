@@ -1,17 +1,15 @@
-import { Link } from "react-router-dom";
-import styles from "./RecipeCard.module.css";
-import StarRating from "./StarRating";
 
+import { Link } from 'react-router-dom'
+import styles from './RecipeCard.module.css'
 
-export default function RecipeCard({ r }){
-  const cover = r.image_url || 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=1200&auto=format&fit=crop'
+export default function RecipeCard({ r }) {
+  const cover = r.image_url || 'https://images.unsplash.com/photo-1512058564366-18510be2db19?q=80&w=1200&auto=format&fit=crop'
   return (
-    <div className="card">
-      <img className="cover" src={cover} alt={r.title} />
-      <h3>{r.title}</h3>
-      <p style={{color:'#a7acb6'}}>{r.description}</p>
-      <div className="row" style={{justifyContent:'space-between'}}>
-        <div>{(r.categories||[]).map(c=><span key={c} className="badge">{c}</span>)}</div>
+    <div className={`card ${styles.card}`}>
+      <img className={styles.cover} src={cover} alt={r.title} />
+      <div className={styles.body}>
+        <h3>{r.title}</h3>
+        <p className={styles.desc}>{r.description}</p>
         <Link className="btn secondary" to={`/recipe/${r.id}`}>View</Link>
       </div>
     </div>
