@@ -2,8 +2,40 @@ import { Router } from 'express'
 import { query } from '../db.js'
 import { requireAuth } from '../middleware/auth.js'
 const router = Router()
-router.get('/', async (req, res) => { const cat = req.query.category; const sql = cat ? `SELECT r.id,r.title,r.description,r.image_url,r.created_at FROM recipes r JOIN recipe_categories rc ON rc.recipe_id=r.id JOIN categories c ON c.id=rc.category_id WHERE c.name=$1 ORDER BY r.created_at DESC` : `SELECT id,title,description,image_url,created_at FROM recipes ORDER BY created_at DESC`; const { rows } = await query(sql, cat ? [cat] : []); res.json(rows) })
-router.get('/:id', async (req, res) => { const { rows } = await query('SELECT id,title,description,ingredients,steps,image_url,created_at FROM recipes WHERE id=$1', [req.params.id]); if (!rows[0]) return res.status(404).json({ error: 'Not found' }); res.json(rows[0]) })
-router.post('/', requireAuth, async (req, res) => { const { title, description, ingredients, steps, image_url, category } = req.body || {}; if (!title || !description) return res.status(400).json({ error: 'Missing fields' }); const { rows } = await query('INSERT INTO recipes (user_id,title,description,ingredients,steps,image_url) VALUES ($1,$2,$3,$4,$5,$6) RETURNING id', [req.session.userId, title, description, ingredients || [], steps || [], image_url || null]); const id = rows[0].id; if (category) { let cat = await query('SELECT id FROM categories WHERE name=$1', [category]); let catId = cat.rows[0]?.id; if (!catId) { cat = await query('INSERT INTO categories (name) VALUES ($1) RETURNING id', [category]); catId = cat.rows[0].id } await query('INSERT INTO recipe_categories (recipe_id,category_id) VALUES ($1,$2) ON CONFLICT DO NOTHING', [id, catId]) } res.status(201).json({ id }) })
-router.delete('/:id', requireAuth, async (req, res) => { await query('DELETE FROM recipes WHERE id=$1 AND user_id=$2', [req.params.id, req.session.userId]); res.json({ ok: true }) })
+router.get('/', async (_req, res) => {
+  const sql = `SELECT r.id, r.title, r.description, r.image_url,
+                      COALESCE(array_agg(c.name) FILTER (WHERE c.name IS NOT NULL), '{}') AS categories
+               FROM recipes r
+               LEFT JOIN recipe_categories rc ON rc.recipe_id=r.id
+               LEFT JOIN categories c ON c.id=rc.category_id
+               GROUP BY r.id
+               ORDER BY r.created_at DESC`
+  const { rows } = await query(sql); res.json(rows)
+})
+router.get('/:id', async (req, res) => {
+  const { rows } = await query(`SELECT r.id, r.title, r.description, r.ingredients, r.steps, r.image_url, r.created_at,
+                                       COALESCE(array_agg(c.name) FILTER (WHERE c.name IS NOT NULL), '{}') AS categories
+                                FROM recipes r
+                                LEFT JOIN recipe_categories rc ON rc.recipe_id=r.id
+                                LEFT JOIN categories c ON c.id=rc.category_id
+                                WHERE r.id=$1 GROUP BY r.id`, [req.params.id])
+  if (!rows[0]) return res.status(404).json({ error: 'Not found' })
+  res.json(rows[0])
+})
+router.post('/', requireAuth, async (req, res) => {
+  const { title, description, ingredients = [], steps = [], image_url = null, categories = [] } = req.body || {}
+  if (!title || !description) return res.status(400).json({ error: 'Missing required fields' })
+  const ins = await query(`INSERT INTO recipes(user_id,title,description,ingredients,steps,image_url)
+                           VALUES($1,$2,$3,$4,$5,$6) RETURNING id`,
+    [req.session.userId, title, description, ingredients, steps, image_url])
+  const recipeId = ins.rows[0].id
+  if (Array.isArray(categories) && categories.length) {
+    for (const name of categories) {
+      const c = await query(`INSERT INTO categories(name) VALUES ($1)
+                              ON CONFLICT(name) DO UPDATE SET name=EXCLUDED.name RETURNING id`, [name])
+      await query(`INSERT INTO recipe_categories(recipe_id,category_id) VALUES($1,$2) ON CONFLICT DO NOTHING`, [recipeId, c.rows[0].id])
+    }
+  }
+  res.status(201).json({ id: recipeId })
+})
 export default router
