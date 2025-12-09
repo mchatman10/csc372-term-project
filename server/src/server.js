@@ -2,27 +2,27 @@ import 'dotenv/config'
 import express from 'express'
 import session from 'express-session'
 import cors from 'cors'
-import auth from './routes/auth.js'
-import recipes from './routes/recipes.js'
+import { query } from './db.js'
+import authRoutes from './routes/auth.js'
+import recipeRoutes from './routes/recipes.js'
+import categoryRoutes from './routes/categories.js'
 
 const app = express()
-const PORT = process.env.PORT || 3000
-
-const allowed = [process.env.CLIENT_ORIGIN || 'http://localhost:5173']
-app.use(cors({
-  origin: (origin, cb) => !origin || allowed.includes(origin) ? cb(null, true) : cb(new Error('Not allowed by CORS')),
-  credentials: true, methods: ['GET', 'POST', 'PUT', 'DELETE']
-}))
 app.use(express.json())
 
-const secure = process.env.NODE_ENV === 'production'
-app.set('trust proxy', 1)
-app.use(session({
-  secret: process.env.SESSION_SECRET || 'dev_secret',
-  resave: false, saveUninitialized: false,
-  cookie: { httpOnly: true, secure, sameSite: secure ? 'none' : 'lax', maxAge: 1000 * 60 * 60 * 24 * 7 }
-}))
-app.use('/auth', auth)
-app.use('/recipes', recipes)
-app.get('/health', (_req, res) => res.json({ ok: true }))
-app.listen(PORT, () => console.log('API listening on', PORT))
+const ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:5173'
+app.use(cors({ origin: ORIGIN, credentials: true }))
+
+app.use(session({ secret: process.env.SESSION_SECRET || 'devsecret', resave:false, saveUninitialized:false }))
+
+await query(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`)
+await query(`CREATE TABLE IF NOT EXISTS users(id UUID PRIMARY KEY DEFAULT uuid_generate_v4(), email TEXT UNIQUE NOT NULL, password_hash TEXT NOT NULL, display_name TEXT);`)
+await query(`CREATE TABLE IF NOT EXISTS recipes(id UUID PRIMARY KEY DEFAULT uuid_generate_v4(), title TEXT NOT NULL, description TEXT, image_url TEXT, ingredients TEXT[], steps TEXT[], category TEXT, created_at TIMESTAMPTZ DEFAULT now());`)
+await query(`CREATE TABLE IF NOT EXISTS categories(id UUID PRIMARY KEY DEFAULT uuid_generate_v4(), name TEXT UNIQUE NOT NULL);`)
+
+app.use('/auth', authRoutes)
+app.use('/recipes', recipeRoutes)
+app.use('/categories', categoryRoutes)
+
+const port = process.env.PORT || 8080
+app.listen(port, ()=> console.log('API on :'+port))

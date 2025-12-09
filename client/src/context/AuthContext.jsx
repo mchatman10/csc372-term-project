@@ -1,13 +1,12 @@
-import React, { createContext, useContext, useEffect, useState } from 'react'
+import React,{createContext,useContext,useEffect,useState} from 'react'
 import { API } from '../util/api.js'
-const Ctx = createContext()
-export function AuthProvider({ children }){
-  const [user,setUser] = useState(null)
-  const [loading,setLoading] = useState(true)
-  useEffect(()=>{ (async()=>{ try{ const me=await API.get('/auth/me'); setUser(me)}catch{setUser(null)} setLoading(false) })() },[])
-  async function login(email,password){ const u = await API.login(email,password); setUser(u); return u }
-  async function register(email,password,display_name){ const u=await API.register(email,password,display_name); setUser(u); return u }
-  async function logout(){ await API.logout(); setUser(null) }
-  return <Ctx.Provider value={{user,loading,login,register,logout,setUser}}>{children}</Ctx.Provider>
+const Ctx=createContext(null)
+export function AuthProvider({children}){
+  const [user,setUser]=useState(null); const [loading,setLoading]=useState(true)
+  useEffect(()=>{(async()=>{try{setUser(await API.me())}catch{setUser(null)}setLoading(false)})()},[])
+  const login=async(e,p)=>{const u=await API.login(e,p);setUser(u);return u}
+  const register=async(e,p,d)=>{const u=await API.register(e,p,d);setUser(u);return u}
+  const logout=async()=>{await API.logout();setUser(null)}
+  return <Ctx.Provider value={{user,loading,login,register,logout}}>{children}</Ctx.Provider>
 }
-export function useAuth(){ return useContext(Ctx) }
+export const useAuth=()=>useContext(Ctx)
