@@ -1,4 +1,9 @@
-const API_BASE = import.meta.env.VITE_API_URL
+let API_BASE = import.meta.env.VITE_API_URL;
+
+if (!API_BASE) {
+  console.warn("VITE_API_URL is missing — falling back to localhost");
+  API_BASE = "http://localhost:5000";
+}
 
 async function request(path, method = "GET", body) {
   const opts = {
