@@ -9,16 +9,16 @@ import RecipeDetail from './pages/RecipeDetail.jsx'
 import RecipeForm from './pages/RecipeForm.jsx'
 import './App.css'
 
-function RequireAuth({ children }){
+function RequireAuth({ children }) {
   const { user, loading } = useAuth()
   const loc = useLocation()
   if (loading) return null
-  if (!user) return <Navigate to="/login" state={{from: loc.pathname}} replace />
+  if (!user) return <Navigate to="/login" state={{ from: loc.pathname }} replace />
   return children
 }
 
-function AppInner(){
-  useEffect(()=>{ document.documentElement.setAttribute('data-theme','dark') },[])
+function AppInner() {
+  useEffect(() => { document.documentElement.setAttribute('data-theme', 'dark') }, [])
   return (
     <div className="app-shell">
       <NavBar />
@@ -36,6 +36,6 @@ function AppInner(){
   )
 }
 
-export default function App(){
+export default function App() {
   return <AuthProvider><AppInner /></AuthProvider>
 }
