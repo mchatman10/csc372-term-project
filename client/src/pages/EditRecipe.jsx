@@ -1,79 +1,74 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
 import { API } from "../util/api";
+import { useParams, useNavigate } from "react-router-dom";
 import styles from "./EditRecipe.module.css";
 
 export default function EditRecipe() {
     const { id } = useParams();
-    const nav = useNavigate();
+    const navigate = useNavigate();
 
     const [form, setForm] = useState({
         title: "",
         description: "",
         ingredients: [""],
         steps: [""],
-        image_url: ""
+        image_url: "",
     });
 
     useEffect(() => {
-        async function load() {
-            try {
-                const r = await API.get(`/recipes/${id}`);
-                setForm({
-                    title: r.title,
-                    description: r.description,
-                    ingredients: r.ingredients,
-                    steps: r.steps,
-                    image_url: r.image_url || ""
-                });
-            } catch {
-                alert("Failed to load recipe");
-            }
-        }
-        load();
+        (async () => {
+            const data = await API.get(`/recipes/${id}`);
+            setForm(data);
+        })();
     }, [id]);
 
-    function setAt(field, index, value) {
-        setForm(f => ({
+    function updateField(field, value) {
+        setForm((f) => ({ ...f, [field]: value }));
+    }
+
+    function updateArray(field, index, value) {
+        setForm((f) => ({
             ...f,
-            [field]: f[field].map((v, i) => (i === index ? value : v))
+            [field]: f[field].map((v, i) => (i === index ? value : v)),
         }));
     }
 
     async function handleSubmit(e) {
         e.preventDefault();
-        await API.post(`/recipes/${id}`, form);
-        nav(`/recipe/${id}`);
+        await API.updateRecipe(id, form);
+        navigate(`/recipe/${id}`);
     }
 
     return (
         <div className={styles.container}>
-            <h2>Edit Recipe</h2>
+            <h1>Edit Recipe</h1>
 
-            <form onSubmit={handleSubmit} className={styles.form}>
+            <form className={styles.form} onSubmit={handleSubmit}>
                 <input
                     className={styles.input}
                     value={form.title}
-                    onChange={(e) => setForm({ ...form, title: e.target.value })}
+                    onChange={(e) => updateField("title", e.target.value)}
                     placeholder="Title"
                 />
 
                 <textarea
                     className={styles.textarea}
-                    rows={3}
                     value={form.description}
-                    onChange={(e) => setForm({ ...form, description: e.target.value })}
+                    onChange={(e) => updateField("description", e.target.value)}
+                    placeholder="Description"
+                    rows={3}
                 />
 
-                <h4>Ingredients</h4>
+                <h3>Ingredients</h3>
                 {form.ingredients.map((ing, i) => (
                     <input
-                        className={styles.input}
                         key={i}
+                        className={styles.input}
                         value={ing}
-                        onChange={(e) => setAt("ingredients", i, e.target.value)}
+                        onChange={(e) => updateArray("ingredients", i, e.target.value)}
                     />
                 ))}
+
                 <button
                     type="button"
                     className={styles.addBtn}
@@ -84,15 +79,16 @@ export default function EditRecipe() {
                     + Add Ingredient
                 </button>
 
-                <h4>Steps</h4>
+                <h3>Steps</h3>
                 {form.steps.map((st, i) => (
                     <input
-                        className={styles.input}
                         key={i}
+                        className={styles.input}
                         value={st}
-                        onChange={(e) => setAt("steps", i, e.target.value)}
+                        onChange={(e) => updateArray("steps", i, e.target.value)}
                     />
                 ))}
+
                 <button
                     type="button"
                     className={styles.addBtn}
@@ -106,11 +102,13 @@ export default function EditRecipe() {
                 <input
                     className={styles.input}
                     value={form.image_url}
+                    onChange={(e) => updateField("image_url", e.target.value)}
                     placeholder="Image URL"
-                    onChange={(e) => setForm({ ...form, image_url: e.target.value })}
                 />
 
-                <button className={styles.saveBtn}>Save Changes</button>
+                <button className={styles.saveBtn} type="submit">
+                    Save Changes
+                </button>
             </form>
         </div>
     );

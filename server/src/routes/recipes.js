@@ -1,87 +1,72 @@
-import { Router } from 'express'
-import { query } from '../db.js'
-import { requireAuth } from '../middleware/auth.js'
-const router = Router()
-router.get('/', async (_req, res) => {
-    const sql = `SELECT r.id, r.title, r.description, r.image_url,
-                      COALESCE(array_agg(c.name) FILTER (WHERE c.name IS NOT NULL), '{}') AS categories
-               FROM recipes r
-               LEFT JOIN recipe_categories rc ON rc.recipe_id=r.id
-               LEFT JOIN categories c ON c.id=rc.category_id
-               GROUP BY r.id
-               ORDER BY r.created_at DESC`
-    const { rows } = await query(sql); res.json(rows)
-})
-router.get('/:id', async (req, res) => {
-    const { rows } = await query(`SELECT r.id, r.title, r.description, r.ingredients, r.steps, r.image_url, r.created_at,
-                                       COALESCE(array_agg(c.name) FILTER (WHERE c.name IS NOT NULL), '{}') AS categories
-                                FROM recipes r
-                                LEFT JOIN recipe_categories rc ON rc.recipe_id=r.id
-                                LEFT JOIN categories c ON c.id=rc.category_id
-                                WHERE r.id=$1 GROUP BY r.id`, [req.params.id])
-    if (!rows[0]) return res.status(404).json({ error: 'Not found' })
-    res.json(rows[0])
-})
-router.post('/', requireAuth, async (req, res) => {
-    const { title, description, ingredients = [], steps = [], image_url = null, categories = [] } = req.body || {}
-    if (!title || !description) return res.status(400).json({ error: 'Missing required fields' })
-    const ins = await query(`INSERT INTO recipes(user_id,title,description,ingredients,steps,image_url)
-                           VALUES($1,$2,$3,$4,$5,$6) RETURNING id`,
-        [req.session.userId, title, description, ingredients, steps, image_url])
-    const recipeId = ins.rows[0].id
-    if (Array.isArray(categories) && categories.length) {
-        for (const name of categories) {
-            const c = await query(`INSERT INTO categories(name) VALUES ($1)
-                              ON CONFLICT(name) DO UPDATE SET name=EXCLUDED.name RETURNING id`, [name])
-            await query(`INSERT INTO recipe_categories(recipe_id,category_id) VALUES($1,$2) ON CONFLICT DO NOTHING`, [recipeId, c.rows[0].id])
-        }
-    }
-    res.status(201).json({ id: recipeId })
-})
+import { Router } from "express";
+import { query } from "../db.js";
+import { requireAuth } from "../middleware/auth.js";
 
-router.put('/:id', requireAuth, async (req, res) => {
-    const recipeId = req.params.id;
-    const userId = req.session.userId;
+const router = Router();
+
+router.get("/", async (_req, res) => {
+    const { rows } = await query(
+        "SELECT * FROM recipes ORDER BY created_at DESC"
+    );
+    res.json(rows);
+});
+
+router.get("/:id", async (req, res) => {
+    const { rows } = await query("SELECT * FROM recipes WHERE id=$1", [
+        req.params.id,
+    ]);
+    if (!rows[0]) return res.status(404).json({ error: "Not found" });
+    res.json(rows[0]);
+});
+
+router.post("/", requireAuth, async (req, res) => {
     const { title, description, ingredients, steps, image_url } = req.body;
 
-    if (!title || !description)
-        return res.status(400).json({ error: "Missing required fields" });
-
-    const { rows: owner } = await query(
-        `SELECT user_id FROM recipes WHERE id=$1`,
-        [recipeId]
+    const { rows } = await query(
+        `INSERT INTO recipes (user_id, title, description, ingredients, steps, image_url)
+     VALUES ($1,$2,$3,$4,$5,$6)
+     RETURNING id`,
+        [
+            req.session.userId,
+            title,
+            description,
+            ingredients,
+            steps,
+            image_url,
+        ]
     );
 
-    if (!owner[0]) return res.status(404).json({ error: "Recipe not found" });
-    if (owner[0].user_id !== userId)
-        return res.status(403).json({ error: "Not authorized" });
+    res.json({ id: rows[0].id });
+});
+
+router.put("/:id", requireAuth, async (req, res) => {
+    const { title, description, ingredients, steps, image_url } = req.body;
 
     await query(
-        `UPDATE recipes
+        `UPDATE recipes 
      SET title=$1, description=$2, ingredients=$3, steps=$4, image_url=$5
-     WHERE id=$6`,
-        [title, description, ingredients, steps, image_url, recipeId]
+     WHERE id=$6 AND user_id=$7`,
+        [
+            title,
+            description,
+            ingredients,
+            steps,
+            image_url,
+            req.params.id,
+            req.session.userId,
+        ]
     );
 
-    res.json({ ok: true, updated: true });
+    res.json({ ok: true });
 });
 
+router.delete("/:id", requireAuth, async (req, res) => {
+    await query(
+        "DELETE FROM recipes WHERE id=$1 AND user_id=$2",
+        [req.params.id, req.session.userId]
+    );
 
-router.delete("/:id", async (req, res) => {
-    try {
-        const result = await db.query("DELETE FROM recipes WHERE id = $1 RETURNING id", [
-            req.params.id,
-        ]);
-
-        if (result.rowCount === 0) {
-            return res.status(404).json({ error: "Recipe not found" });
-        }
-
-        res.json({ success: true });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: "Server error" });
-    }
+    res.json({ ok: true });
 });
 
-export default router
+export default router;
