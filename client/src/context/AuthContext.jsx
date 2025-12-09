@@ -8,7 +8,12 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true)
 
   async function load() {
-    try { const u = await API.me(); setUser(u) } catch { setUser(null) }
+    try {
+      const u = await API.me()
+      setUser(u)
+    } catch {
+      setUser(null)
+    }
     setLoading(false)
   }
 
@@ -19,21 +24,27 @@ export function AuthProvider({ children }) {
     setUser(u)
     return u
   }
+
   async function register(email, password, display_name) {
     const u = await API.register(email, password, display_name)
     setUser(u)
     return u
   }
+
   async function logout() {
     await API.logout()
     setUser(null)
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, register }}>
+    <AuthContext.Provider
+      value={{ user, loading, login, logout, register, setUser }}
+    >
       {children}
     </AuthContext.Provider>
   )
 }
 
-export function useAuth() { return useContext(AuthContext) }
+export function useAuth() {
+  return useContext(AuthContext)
+}

@@ -1,12 +1,16 @@
 import { useState } from "react";
-import { API } from "../util/api";
 import { useAuth } from "../context/AuthContext";
 import styles from "./Login.module.css";
 
 export default function Login() {
-  const { setUser } = useAuth();
+  const { login, register, setUser } = useAuth();
+
   const [isRegister, setIsRegister] = useState(false);
-  const [form, setForm] = useState({ email: "", password: "", display_name: "" });
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+    display_name: ""
+  });
   const [error, setError] = useState("");
 
   function handleChange(e) {
@@ -18,8 +22,13 @@ export default function Login() {
     setError("");
 
     try {
-      let endpoint = isRegister ? "/auth/register" : "/auth/login";
-      const user = await API.post(endpoint, form);
+      let user;
+      if (isRegister) {
+        user = await register(form.email, form.password, form.display_name);
+      } else {
+        user = await login(form.email, form.password);
+      }
+
       setUser(user);
     } catch (err) {
       setError(err.message || "Something went wrong");
@@ -28,7 +37,9 @@ export default function Login() {
 
   return (
     <div className={styles.container}>
-      <h2 className={styles.title}>{isRegister ? "Register" : "Login"}</h2>
+      <h2 className={styles.title}>
+        {isRegister ? "Register" : "Login"}
+      </h2>
 
       {error && <p className={styles.error}>{error}</p>}
 
