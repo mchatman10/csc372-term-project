@@ -1,8 +1,0 @@
-.toggle {
-    background: transparent;
-    border: 1px solid #333;
-    color: var(--fg);
-    border-radius: 999px;
-    padding: 6px 10px;
-    cursor: pointer;
-}

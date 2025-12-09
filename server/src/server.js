@@ -1,58 +1,38 @@
-import express from "express";
-import session from "express-session";
-import path from "path";
-import { fileURLToPath } from "url";
+import 'dotenv/config'
+import express from 'express'
+import cors from 'cors'
+import session from 'express-session'
 
-import authGoogle from "./routes/auth-google.js";
-import recipes from "./routes/recipes.js";
-import ratings from "./routes/ratings.js";
-import external from "./routes/external.js";
+import authGoogle from './routes/auth-google.js'
+import recipes from './routes/recipes.js'
+import external from './routes/external.js'
 
-const app = express();
-const PORT = process.env.PORT || 3000;
+const app = express()
+const PORT = process.env.PORT || 3000
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const allowed = [ process.env.CLIENT_ORIGIN || 'http://localhost:5173' ]
 
-const allowedOrigins = new Set(
-  [process.env.CLIENT_ORIGIN, "http://localhost:5173"].filter(Boolean)
-);
+app.use(cors({
+  origin: (origin, cb) => (!origin || allowed.includes(origin)) ? cb(null, true) : cb(new Error('Not allowed by CORS')),
+  methods: ['GET','POST','PUT','DELETE'],
+  credentials: true
+}))
 
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
-  if (origin && allowedOrigins.has(origin)) {
-    res.header("Access-Control-Allow-Origin", origin);
-  }
-  res.header("Access-Control-Allow-Credentials", "true");
-  res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE");
-  res.header("Access-Control-Allow-Headers", "Content-Type");
+app.use(express.json())
 
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(200);
-  }
-  next();
-});
+const secure = process.env.NODE_ENV === 'production'
+app.set('trust proxy', 1)
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'dev_secret',
+  resave: false,
+  saveUninitialized: false,
+  cookie: { httpOnly: true, secure, sameSite: secure ? 'none' : 'lax', maxAge: 1000*60*60*24*7 }
+}))
 
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET || "dev_secret",
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "none",
-    },
-  })
-);
+app.use('/auth', authGoogle)
+app.use('/recipes', recipes)
+app.use('/external', external)
 
-app.use(express.json());
-app.use("/auth", authGoogle);
-app.use("/recipes", recipes);
-app.use("/ratings", ratings);
-app.use("/external", external);
+app.get('/health', (_req, res) => res.json({ ok: true }))
 
-app.get("/health", (req, res) => res.json({ status: "OK" }));
-
-app.listen(PORT, () => {
-  console.log(`API listening on port ${PORT}`);
-});
+app.listen(PORT, () => console.log('API listening on', PORT))
