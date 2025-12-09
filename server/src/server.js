@@ -13,7 +13,7 @@ app.use(express.json())
 const ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:5173'
 app.use(cors({ origin: ORIGIN, credentials: true }))
 
-app.use(session({ secret: process.env.SESSION_SECRET || 'devsecret', resave:false, saveUninitialized:false }))
+app.use(session({ secret: process.env.SESSION_SECRET || 'devsecret', resave: false, saveUninitialized: false }))
 
 await query(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`)
 await query(`CREATE TABLE IF NOT EXISTS users(id UUID PRIMARY KEY DEFAULT uuid_generate_v4(), email TEXT UNIQUE NOT NULL, password_hash TEXT NOT NULL, display_name TEXT);`)
@@ -25,4 +25,4 @@ app.use('/recipes', recipeRoutes)
 app.use('/categories', categoryRoutes)
 
 const port = process.env.PORT || 8080
-app.listen(port, ()=> console.log('API on :'+port))
+app.listen(port, () => console.log('API on :' + port))
