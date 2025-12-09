@@ -10,13 +10,23 @@ import external from './routes/external.js'
 const app = express()
 const PORT = process.env.PORT || 3000
 
-const allowed = [ process.env.CLIENT_ORIGIN || 'http://localhost:5173' ]
+const allowed = [
+  process.env.CLIENT_ORIGIN || 'http://localhost:5173'
+]
 
 app.use(cors({
-  origin: (origin, cb) => (!origin || allowed.includes(origin)) ? cb(null, true) : cb(new Error('Not allowed by CORS')),
-  methods: ['GET','POST','PUT','DELETE'],
-  credentials: true
+  origin: (origin, cb) => {
+    if (!origin || allowed.includes(origin)) {
+      cb(null, true)
+    } else {
+      cb(new Error('Not allowed by CORS'))
+    }
+  },
+  credentials: true,
+  methods: ['GET','POST','PUT','DELETE']
 }))
+
+app.options('*', cors())
 
 app.use(express.json())
 
@@ -26,7 +36,12 @@ app.use(session({
   secret: process.env.SESSION_SECRET || 'dev_secret',
   resave: false,
   saveUninitialized: false,
-  cookie: { httpOnly: true, secure, sameSite: secure ? 'none' : 'lax', maxAge: 1000*60*60*24*7 }
+  cookie: {
+    httpOnly: true,
+    secure,
+    sameSite: secure ? 'none' : 'lax',
+    maxAge: 1000 * 60 * 60 * 24 * 7
+  }
 }))
 
 app.use('/auth', authGoogle)
