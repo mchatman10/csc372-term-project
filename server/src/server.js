@@ -1,6 +1,5 @@
 import express from "express";
 import session from "express-session";
-import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -14,19 +13,28 @@ const PORT = process.env.PORT || 3000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-app.use(
-  cors({
-    origin: [
-      "https://csc372-term-project-1-lnk9.onrender.com",  // <-- YOUR ACTUAL FRONTEND
-      "https://csc372-term-project-1.onrender.com"        // keep if needed.
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true,
-  })
-);
 
+const allowedOrigins = [
+  "https://csc372-term-project-1-lnk9.onrender.com",
+];
 
-app.options("*", cors());
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+
+  if (allowedOrigins.includes(origin)) {
+    res.header("Access-Control-Allow-Origin", origin);
+  }
+
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE");
+  res.header("Access-Control-Allow-Headers", "Content-Type");
+
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+
+  next();
+});
 
 app.use(
   session({
@@ -51,5 +59,5 @@ app.get("/health", (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log("API listening on", PORT);
+  console.log(`API listening on port ${PORT}`);
 });
