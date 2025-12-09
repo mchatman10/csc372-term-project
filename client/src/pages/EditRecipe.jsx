@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { API } from "../util/api";
 import { useParams, useNavigate } from "react-router-dom";
+import { API } from "../util/api";
 import styles from "./EditRecipe.module.css";
 
 export default function EditRecipe() {
@@ -55,7 +55,6 @@ export default function EditRecipe() {
                     className={styles.textarea}
                     value={form.description}
                     onChange={(e) => updateField("description", e.target.value)}
-                    placeholder="Description"
                     rows={3}
                 />
 
@@ -92,10 +91,7 @@ export default function EditRecipe() {
                 <button
                     type="button"
                     className={styles.addBtn}
-                    onClick={() =>
-                        setForm((f) => ({ ...f, steps: [...f.steps, ""] }))
-                    }
-                >
+                    onClick={() => setForm((f) => ({ ...f, steps: [...f.steps, ""] }))}>
                     + Add Step
                 </button>
 
@@ -107,7 +103,7 @@ export default function EditRecipe() {
                 />
 
                 <button className={styles.saveBtn} type="submit">
-                    Save Changes
+                    Save
                 </button>
             </form>
         </div>
