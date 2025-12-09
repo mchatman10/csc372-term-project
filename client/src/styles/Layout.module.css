@@ -1,0 +1,40 @@
+:root {
+    color-scheme: light dark;
+}
+
+[data-theme="dark"] {
+    --bg: #0f0f0f;
+    --fg: #e7e7e7;
+    --card: #171717;
+    --muted: #9aa0a6;
+    --accent: #ff6b6b;
+    --btn: #2563eb;
+}
+
+[data-theme="light"] {
+    --bg: #ffffff;
+    --fg: #111111;
+    --card: #f7f7f7;
+    --muted: #555;
+    --accent: #c71f1f;
+    --btn: #0f62fe;
+}
+
+body {
+    margin: 0;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+}
+
+.container {
+    max-width: 1000px;
+    margin: 24px auto;
+    padding: 0 16px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+}

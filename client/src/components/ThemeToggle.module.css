@@ -1,9 +1,0 @@
-.toggle {
-    background: var(--card-bg);
-    border: 1px solid #444;
-    padding: 6px 14px;
-    border-radius: 6px;
-    cursor: pointer;
-    color: var(--text);
-    font-size: 0.9rem;
-}

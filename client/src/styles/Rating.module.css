@@ -1,19 +1,18 @@
-.container {
+.row {
     display: flex;
-    gap: 4px;
-}
-
-.star,
-.starFilled {
-    cursor: pointer;
-    font-size: 1.6rem;
-    transition: 0.15s;
+    gap: 6px;
 }
 
 .star {
+    cursor: pointer;
+    font-size: 1.6rem;
     color: #777;
+    transition: .15s;
 }
 
 .starFilled {
+    cursor: pointer;
+    font-size: 1.6rem;
     color: #f4b400;
+    transition: .15s;
 }
