@@ -31,3 +31,6 @@ createRoot(document.getElementById('root')).render(
     </AuthProvider>
   </React.StrictMode>
 )
+
+const saved = localStorage.getItem("theme");
+if (saved === "light") document.body.classList.add("light");

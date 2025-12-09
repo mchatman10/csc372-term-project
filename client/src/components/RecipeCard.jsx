@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom';
 import styles from './RecipeCard.module.css';
 
+<p className={styles.categoryTag}>{r.category || "Uncategorized"}</p>
+
 export default function RecipeCard({ r }) {
   if (!r) return null;
 

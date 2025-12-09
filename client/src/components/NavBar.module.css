@@ -1,28 +1,20 @@
 .nav {
-    background: var(--color-bg);
-    padding: 12px 0;
-}
-
-.container {
+    background: var(--card-bg);
+    padding: 12px 32px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    width: 90%;
-    margin: 0 auto;
-}
-
-.right {
-    display: flex;
-    gap: 12px;
-    align-items: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
 .brand {
-    font-size: 1.4rem;
+    color: var(--accent);
+    font-size: 26px;
     font-weight: bold;
-    color: var(--color-text);
+    text-decoration: none;
 }
 
 .user {
-    color: var(--color-text);
+    margin-right: 12px;
+    opacity: 0.9;
 }
