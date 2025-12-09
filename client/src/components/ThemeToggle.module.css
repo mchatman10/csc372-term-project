@@ -1,6 +1,11 @@
-.fab {
-    position: fixed;
-    right: 14px;
-    bottom: 14px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, .35);
+.toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text);
+    cursor: pointer
 }

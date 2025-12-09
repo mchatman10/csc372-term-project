@@ -1,37 +1,5 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { API } from '../util/api.js'
-export default function RecipeForm() {
-  const nav = useNavigate()
-  const [form, setForm] = useState({ title: '', description: '', image_url: '', ingredients: '', steps: '', categories: [] })
-  const [err, setErr] = useState('')
-  function onChange(e) { setForm({ ...form, [e.target.name]: e.target.value }) }
-  function toggleCat(c) { setForm(f => ({ ...f, categories: f.categories.includes(c) ? f.categories.filter(x => x !== c) : [...f.categories, c] })) }
-  async function onSubmit(e) {
-    e.preventDefault(); setErr('')
-    try {
-      const payload = { ...form, ingredients: form.ingredients.split('\n').filter(Boolean), steps: form.steps.split('\n').filter(Boolean) }
-      const res = await API.createRecipe(payload)
-      nav(`/recipe/${res.id}`)
-    } catch (ex) { setErr(ex.message || 'Failed') }
-  }
-  return (
-    <form className="form" onSubmit={onSubmit}>
-      <h2 style={{ margin: 0 }}>Add Recipe</h2>
-      {err && <div className="error">{err}</div>}
-      <input className="input" name="title" placeholder="Title" value={form.title} onChange={onChange} />
-      <input className="input" name="image_url" placeholder="Image URL" value={form.image_url} onChange={onChange} />
-      <textarea className="input" rows="3" name="description" placeholder="Short description" value={form.description} onChange={onChange} />
-      <textarea className="input" rows="5" name="ingredients" placeholder="One ingredient per line" value={form.ingredients} onChange={onChange} />
-      <textarea className="input" rows="5" name="steps" placeholder="One step per line" value={form.steps} onChange={onChange} />
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-        {['Breakfast', 'Lunch', 'Dinner'].map(c => (
-          <label key={c} style={{ display: 'flex', gap: 6, alignItems: 'center', border: '1px solid rgba(255,255,255,.12)', padding: '.4rem .6rem', borderRadius: 8 }}>
-            <input type="checkbox" checked={form.categories.includes(c)} onChange={() => toggleCat(c)} /> {c}
-          </label>
-        ))}
-      </div>
-      <button className="btn" type="submit">Save</button>
-    </form>
-  )
-}
+import { API } from '../util/api'
+import styles from './RecipeForm.module.css'
+export default function RecipeForm() { const [form, setForm] = useState({ title: '', description: '', ingredients: '', steps: '', image_url: '', category: null }); const [error, setError] = useState(''); const nav = useNavigate(); function handle(e) { setForm(f => ({ ...f, [e.target.name]: e.target.value })) } async function submit(e) { e.preventDefault(); setError(''); try { const payload = { ...form, ingredients: form.ingredients.split('\n').filter(Boolean), steps: form.steps.split('\n').filter(Boolean) }; const { id } = await API.createRecipe(payload); nav(`/recipe/${id}`) } catch (err) { setError(err.message || 'Failed to save') } } return (<div className='container'><form className={`card ${styles.form}`} onSubmit={submit}><h2>Add a recipe</h2>{error && <div className='error'>{error}</div>}<div className={styles.row}><input className='input' name='title' placeholder='Title' value={form.title} onChange={handle} /><input className='input' name='image_url' placeholder='Image URL' value={form.image_url} onChange={handle} /></div><input className='input' name='category' placeholder='Category (Breakfast/Lunch/Dinner)' value={form.category || ''} onChange={handle} /><textarea className='textarea' rows='3' name='description' placeholder='Short description' value={form.description} onChange={handle}></textarea><textarea className='textarea' rows='6' name='ingredients' placeholder='Ingredients (one per line)' value={form.ingredients} onChange={handle}></textarea><textarea className='textarea' rows='6' name='steps' placeholder='Steps (one per line)' value={form.steps} onChange={handle}></textarea><button className='btn'>Save</button></form></div>) }

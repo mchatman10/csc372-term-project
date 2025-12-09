@@ -1,34 +1,5 @@
-import React, { useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext.jsx'
+import { useState } from 'react'
 import styles from './Login.module.css'
-export default function Login(){
-  const { login, register } = useAuth()
-  const [isRegister,setRegister] = useState(false)
-  const [form,setForm] = useState({ email:'', password:'', display_name:'' })
-  const [err,setErr] = useState('')
-  const nav = useNavigate()
-  const loc = useLocation()
-  function onChange(e){ setForm({ ...form, [e.target.name]: e.target.value }) }
-  async function onSubmit(e){
-    e.preventDefault(); setErr('')
-    try{
-      if (isRegister) await register(form.email,form.password,form.display_name)
-      else await login(form.email,form.password)
-      nav(loc.state?.from || '/', { replace:true })
-    }catch(ex){ setErr(ex.message || 'Auth failed') }
-  }
-  return (
-    <div className="container">
-      <form className="form" onSubmit={onSubmit}>
-        <h2 className={styles.title}>{isRegister?'Register':'Login'}</h2>
-        {err && <div className="error">{err}</div>}
-        {isRegister && <input className="input" name="display_name" placeholder="Display Name" value={form.display_name} onChange={onChange} />}
-        <input className="input" type="email" name="email" placeholder="Email" value={form.email} onChange={onChange} />
-        <input className="input" type="password" name="password" placeholder="Password" value={form.password} onChange={onChange} />
-        <button className="btn" type="submit">{isRegister?'Create Account':'Login'}</button>
-        <div style={{textAlign:'center'}}>{isRegister?'Have an account?':'No account?'} <button type="button" className="btn secondary" onClick={()=> setRegister(v=>!v)}>{isRegister?'Login':'Register'}</button></div>
-      </form>
-    </div>
-  )
-}
+import { useAuth } from '../context/AuthContext'
+import { useNavigate } from 'react-router-dom'
+export default function Login() { const { login, register } = useAuth(); const [isRegister, setIsRegister] = useState(false); const [form, setForm] = useState({ email: '', password: '', display_name: '' }); const [error, setError] = useState(''); const nav = useNavigate(); function handle(e) { setForm(f => ({ ...f, [e.target.name]: e.target.value })) } async function submit(e) { e.preventDefault(); setError(''); try { if (isRegister) await register(form.email, form.password, form.display_name); else await login(form.email, form.password); nav('/') } catch (err) { setError(err.message || 'Failed') } } return (<div className={styles.wrap}><form onSubmit={submit} className={`card ${styles.card}`}><h2 className={styles.title}>{isRegister ? 'Create account' : 'Login'}</h2>{error && <div className={styles.error}>{error}</div>}{isRegister && <input className='input' name='display_name' placeholder='Display name' value={form.display_name} onChange={handle} />}<input className='input' name='email' type='email' placeholder='Email' value={form.email} onChange={handle} /><input className='input' name='password' type='password' placeholder='Password' value={form.password} onChange={handle} /><button className='btn' type='submit'>{isRegister ? 'Register' : 'Login'}</button><div className={styles.switch}>{isRegister ? 'Have an account?' : 'No account?'} <span onClick={() => setIsRegister(!isRegister)}>{isRegister ? 'Login' : 'Register'}</span></div></form></div>) }
