@@ -1,92 +1,34 @@
-import { useState } from "react";
-import { useAuth } from "../context/AuthContext";
-import styles from "./Login.module.css";
-
-export default function Login() {
-  const { login, register, setUser } = useAuth();
-
-  const [isRegister, setIsRegister] = useState(false);
-  const [form, setForm] = useState({
-    email: "",
-    password: "",
-    display_name: ""
-  });
-  const [error, setError] = useState("");
-
-  function handleChange(e) {
-    setForm({ ...form, [e.target.name]: e.target.value });
+import React, { useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext.jsx'
+import styles from './Login.module.css'
+export default function Login(){
+  const { login, register } = useAuth()
+  const [isRegister,setRegister] = useState(false)
+  const [form,setForm] = useState({ email:'', password:'', display_name:'' })
+  const [err,setErr] = useState('')
+  const nav = useNavigate()
+  const loc = useLocation()
+  function onChange(e){ setForm({ ...form, [e.target.name]: e.target.value }) }
+  async function onSubmit(e){
+    e.preventDefault(); setErr('')
+    try{
+      if (isRegister) await register(form.email,form.password,form.display_name)
+      else await login(form.email,form.password)
+      nav(loc.state?.from || '/', { replace:true })
+    }catch(ex){ setErr(ex.message || 'Auth failed') }
   }
-
-  async function handleSubmit(e) {
-    e.preventDefault();
-    setError("");
-
-    try {
-      let user;
-      if (isRegister) {
-        user = await register(form.email, form.password, form.display_name);
-      } else {
-        user = await login(form.email, form.password);
-      }
-
-      setUser(user);
-    } catch (err) {
-      setError(err.message || "Something went wrong");
-    }
-  }
-
   return (
-    <div className={styles.container}>
-      <h2 className={styles.title}>
-        {isRegister ? "Register" : "Login"}
-      </h2>
-
-      {error && <p className={styles.error}>{error}</p>}
-
-      <form onSubmit={handleSubmit} className={styles.form}>
-        {isRegister && (
-          <input
-            type="text"
-            name="display_name"
-            placeholder="Display Name"
-            value={form.display_name}
-            onChange={handleChange}
-            className={styles.input}
-          />
-        )}
-
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={form.email}
-          onChange={handleChange}
-          className={styles.input}
-        />
-
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={form.password}
-          onChange={handleChange}
-          className={styles.input}
-        />
-
-        <button type="submit" className={styles.button}>
-          {isRegister ? "Create Account" : "Login"}
-        </button>
-
-        <p className={styles.switchText}>
-          {isRegister ? "Have an account?" : "No account?"}
-          <span
-            className={styles.switchLink}
-            onClick={() => setIsRegister(!isRegister)}
-          >
-            {isRegister ? " Login" : " Register"}
-          </span>
-        </p>
+    <div className="container">
+      <form className="form" onSubmit={onSubmit}>
+        <h2 className={styles.title}>{isRegister?'Register':'Login'}</h2>
+        {err && <div className="error">{err}</div>}
+        {isRegister && <input className="input" name="display_name" placeholder="Display Name" value={form.display_name} onChange={onChange} />}
+        <input className="input" type="email" name="email" placeholder="Email" value={form.email} onChange={onChange} />
+        <input className="input" type="password" name="password" placeholder="Password" value={form.password} onChange={onChange} />
+        <button className="btn" type="submit">{isRegister?'Create Account':'Login'}</button>
+        <div style={{textAlign:'center'}}>{isRegister?'Have an account?':'No account?'} <button type="button" className="btn secondary" onClick={()=> setRegister(v=>!v)}>{isRegister?'Login':'Register'}</button></div>
       </form>
     </div>
-  );
+  )
 }
